@@ -1,91 +1,94 @@
-let diceArray = [];
-let idNumber = 0;
+dice_array = []; //array for storing each dice
+id_number = 0; //starting vaue for id
+let container = $('#dice-container'); //get container
 
 
-//create array to convert value to class name
-let valueArray = [];
-valueArray[1] = "one";
-valueArray[2] = "two";
-valueArray[3] = "three";
-valueArray[4] = "four";
-valueArray[5] = "five";
-valueArray[6] = "six";
 
+//begin die class
 class die {
-    constructor(value) {
-        //assign value to object
+    constructor (value) {
         this.value = value;
-        //roll to get value
-        this.roll();
-        //create div for dice
-        this.div = $('<div class=dice></div>');
-        //assign class for dice based on value number
-        this.div.attr("class", valueArray[this.value]);
-        //get dice container id from html
-        let diceContainer = $('#dice-container');
-        //append dice to container
-        diceContainer.append(this.div);
-        //create for loop to add dots to dice
-        for (let i = 0; i < this.value; i++) {
-            let dot = document.createElement('div');
-            dot.className = 'dot';
-            this.div.append(dot);
-        }
-    //assign id number to div
-    this.id = idNumber;
-    this.div.attr("id", this.id);
+        this.roll();//rolls for value
+        this.id = id_number;
+        this.div = $(`<div class=dice></div>`);
+        this.div.attr("id", this.id);
+        this.div.append(this.dieValue());//add die value to div
+        container.append(this.div);
+        //changes value on click
+        this.div.click( () => {
+            this.roll();
+            this.div.empty().html(this.dieValue());
+        })
+        this.div.dblclick(() => {
+            this.removeDie();//remove upon double clicking
+        })
+    }
 
-//click function to re roll dice and assign new class
-    this.div.click ( () => {
-        this.div.removeClass(this.div.attr("class")); //remove current class on click
-    this.div.empty();   //empty current dots off div
-    this.roll();    //roll for new value
-    this.div.addClass(valueArray[this.value]);  //add class for new array
-    //generate new dots on die
-    for (let i = 0; i < this.value; i++) {
-    let dot = document.createElement('div');
-    dot.className = 'dot';
-    this.div.append(dot);}
-});
-
-this.div.dblclick( () => {
-    console.log('clicked!');      
-});
-
-        }//end constructor
-
-        roll() {
+    //sets value to a random number 1-6
+    roll() {
         this.value = Math.floor((Math.random() * 6) + 1);
-        }  
+    }
 
-        
+    //sets each value to the unicode equiv. for dice faces
+    dieValue (unicode) {
+        if (this.value === 1) {
+            unicode = '&#9856;';
+            return unicode;
+        } else if (this.value === 2) {
+            unicode = '&#9857;';
+            return unicode;
+        } else if (this.value === 3) {
+            unicode = '&#9858;';
+            return unicode;
+        } else if (this.value === 4) {
+            unicode = '&#9859;';
+            return unicode;
+        } else if (this.value === 5) {
+            unicode = '&#9860;';
+            return unicode;
+        } else if (this.value === 6) {
+            unicode = '&#9861;';
+            return unicode;
+        }
+    }
+    //remove die function
+    removeDie() {
+        $(`#${this.id}`).remove();//selects this id to remove
+        let index = dice_array.findIndex(dice => dice.id === this.id) //sets index value for die to be removed from array
+        dice_array.splice(index, 1); //removes die
+    }
 
-}//end die object
+}
 
-    //establish buttons   
-let button = $('#btn');
-let rollDice = $('#roll');
-let sumDice = $('#sum');
+let addDice = $('#add'); //add button
+let rollDice = $('#roll'); //roll die button
+let sumDice = $('#sum'); //total up values
 
-    //create die on click
-button.click ( () => {
-let d = new die();
-diceArray.push(d);
-idNumber++;
-console.log(diceArray);
+
+//add dice on click function
+addDice.click( () => {
+    let d = new die();
+    dice_array.push(d);
+    id_number++;
 })
-    //sum values on click
+//call sum on click
 sumDice.click(sum);
 
-    //function to add value of all die
+//sum all values function
 function sum () {
-let total = 0;
-for (let i = 0; i < diceArray.length; i++) {
-total += diceArray[i].value;
+    let total = 0;
+    for (let i = 0; i < dice_array.length; i++) {
+        total += dice_array[i].value
+    }
+    alert (`The total for all the dice rolled is ${total}`);
 }
-    alert(`The total sum of the die on page is: ${total}`);
-};
 
+//roll all die function
+rollDice.click( () => {
 
+    for (let i = 0; i < dice_array.length; i++) {
+        dice_array[i].roll();
+        $(`#${i}`).html(dice_array[i].dieValue());
+    }
 
-
+})
